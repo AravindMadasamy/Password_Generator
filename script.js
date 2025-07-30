@@ -1,12 +1,30 @@
 function generatePassword() {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-={}[]|:;<>,.?/";
-  const length = 12;
-  let password = "";
-  for (let i = 0; i < length; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  const lettersCount = parseInt(document.getElementById('letters').value);
+  const numbersCount = parseInt(document.getElementById('numbers').value);
+  const symbolsCount = parseInt(document.getElementById('symbols').value);
+
+  const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  const symbols = "!@#$%^&*()_+-={}[]|:;<>,.?/";
+
+  let passwordArray = [];
+
+  for (let i = 0; i < lettersCount; i++) {
+    passwordArray.push(letters.charAt(Math.floor(Math.random() * letters.length)));
   }
-  document.getElementById("password").value = password;
+
+  for (let i = 0; i < numbersCount; i++) {
+    passwordArray.push(numbers.charAt(Math.floor(Math.random() * numbers.length)));
+  }
+
+  for (let i = 0; i < symbolsCount; i++) {
+    passwordArray.push(symbols.charAt(Math.floor(Math.random() * symbols.length)));
+  }
+
+  // Shuffle the array
+  passwordArray = passwordArray.sort(() => Math.random() - 0.5);
+
+  document.getElementById('password').value = passwordArray.join('');
 }
 
 document.getElementById("copyBtn").addEventListener("click", () => {
