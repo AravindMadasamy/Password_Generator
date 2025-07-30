@@ -3,17 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Password Generator</title>
+  <title>Custom Password Generator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Password Generator</h1>
+    <h1>Create a Strong Password</h1>
+
+    <div class="input-group">
+      <label>Number of letters:</label>
+      <input type="number" id="letters" min="1" value="6" />
+    </div>
+
+    <div class="input-group">
+      <label>Number of numbers:</label>
+      <input type="number" id="numbers" min="0" value="2" />
+    </div>
+
+    <div class="input-group">
+      <label>Number of symbols:</label>
+      <input type="number" id="symbols" min="0" value="2" />
+    </div>
+
     <div class="password-box">
-      <input type="text" id="password" readonly />
+      <input type="text" id="password" readonly placeholder="Your password will appear here" />
       <button id="copyBtn" title="Copy Password">📋</button>
     </div>
-    <button class="generate-btn" onclick="generatePassword()">Generate</button>
+
+    <button class="generate-btn" onclick="generatePassword()">Generate Password</button>
   </div>
 
   <script src="script.js"></script>
