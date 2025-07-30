@@ -7,7 +7,6 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #12a4d9, #d9138a);
       color: white;
@@ -19,11 +18,11 @@
     }
 
     h1 {
-      animation: slideDown 1s ease-in-out;
+      animation: dropIn 1s ease;
     }
 
-    @keyframes slideDown {
-      from { transform: translateY(-50px); opacity: 0; }
+    @keyframes dropIn {
+      from { transform: translateY(-30px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
 
@@ -31,16 +30,10 @@
       background: rgba(255, 255, 255, 0.1);
       padding: 20px;
       border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(10px);
-      animation: fadeIn 1.5s ease;
       max-width: 90%;
       width: 400px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
     }
 
     label, input {
@@ -59,13 +52,13 @@
     button {
       background: #d9138a;
       border: none;
-      padding: 12px 20px;
+      padding: 12px;
       color: white;
       font-weight: bold;
       border-radius: 10px;
       cursor: pointer;
       width: 100%;
-      transition: background 0.3s;
+      transition: background 0.3s ease;
     }
 
     button:hover {
@@ -77,14 +70,14 @@
       padding: 12px;
       background: rgba(255, 255, 255, 0.2);
       border-radius: 10px;
-      word-break: break-all;
+      word-break: break-word;
       cursor: pointer;
-      animation: bounceIn 0.5s ease-in-out;
+      animation: bounceIn 0.4s ease-in-out;
     }
 
     @keyframes bounceIn {
       0% { transform: scale(0.9); opacity: 0; }
-      60% { transform: scale(1.05); opacity: 1; }
+      70% { transform: scale(1.05); opacity: 1; }
       100% { transform: scale(1); }
     }
 
@@ -98,14 +91,14 @@
   <h1>Password Generator</h1>
 
   <div class="container">
-    <label for="name">Enter Name or Word:</label>
-    <input type="text" id="name" placeholder="e.g. Aravind123"/>
+    <label for="name">Enter your Name or Word:</label>
+    <input type="text" id="name" placeholder="e.g. Aravind"/>
 
-    <label for="symbols">How many symbols?</label>
+    <label for="symbols">Number of Symbols:</label>
     <input type="number" id="symbols" min="0" placeholder="e.g. 2"/>
 
-    <label for="numbers">How many numbers?</label>
-    <input type="number" id="numbers" min="0" placeholder="e.g. 4"/>
+    <label for="numbers">Number of Numbers:</label>
+    <input type="number" id="numbers" min="0" placeholder="e.g. 3"/>
 
     <button onclick="generatePassword()">Generate Password</button>
 
@@ -116,9 +109,14 @@
 
   <script>
     function generatePassword() {
-      const name = document.getElementById("name").value;
+      const name = document.getElementById("name").value.trim();
       const symbolCount = parseInt(document.getElementById("symbols").value) || 0;
       const numberCount = parseInt(document.getElementById("numbers").value) || 0;
+
+      if (!name) {
+        alert("Please enter your name or word.");
+        return;
+      }
 
       const symbols = "!@#$%^&*()_+{}[]~?";
       const numbers = "0123456789";
@@ -134,20 +132,26 @@
         randomNumbers += numbers.charAt(Math.floor(Math.random() * numbers.length));
       }
 
-      let password = name + randomSymbols + randomNumbers;
+      // Randomly decide position: before, after, or both
+      const position = Math.floor(Math.random() * 3);
+      let password = "";
 
-      // Shuffle password
-      password = password.split('').sort(() => Math.random() - 0.5).join('');
+      if (position === 0) {
+        password = randomSymbols + randomNumbers + name; // Before
+      } else if (position === 1) {
+        password = name + randomSymbols + randomNumbers; // After
+      } else {
+        password = randomSymbols + name + randomNumbers; // Surround
+      }
 
-      const result = document.getElementById("result");
-      result.textContent = password || "Please enter valid inputs!";
-      result.classList.add("output");
+      document.getElementById("result").textContent = password;
     }
 
     function copyPassword() {
-      const text = document.getElementById("result").textContent;
-      if (text && text !== "Click \"Generate Password\"") {
-        navigator.clipboard.writeText(text);
+      const resultBox = document.getElementById("result");
+      const password = resultBox.textContent;
+      if (password && password !== "Click \"Generate Password\"") {
+        navigator.clipboard.writeText(password);
         alert("Password copied to clipboard!");
       }
     }
