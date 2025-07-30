@@ -1,137 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Stylish Password Generator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Generator</title>
   <style>
     body {
-      background: linear-gradient(135deg, #d9138a, #12a4d9);
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
-    }
-    .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(217, 19, 138, 0.4);
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      animation: fadeIn 1s ease-in-out;
-    }
-    h1 {
-      color: #d9138a;
-      margin-bottom: 20px;
-      font-size: 1.8em;
-    }
-    input {
-      width: 60px;
-      padding: 5px;
-      margin: 5px;
-      border: 2px solid #12a4d9;
-      border-radius: 10px;
-      text-align: center;
-    }
-    button {
-      background: #d9138a;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #12a4d9, #d9138a);
       color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 15px;
-      cursor: pointer;
-      font-size: 1em;
-      margin-top: 15px;
-      transition: transform 0.3s ease, background 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-    button:hover {
-      background: #12a4d9;
-      transform: scale(1.05);
+
+    h1 {
+      animation: slideDown 1s ease-in-out;
     }
-    #output {
-      margin-top: 20px;
-      font-size: 1.2em;
-      word-break: break-word;
-      color: #333;
+
+    @keyframes slideDown {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 1.5s ease;
+      max-width: 90%;
+      width: 400px;
     }
 
     @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(-20px); }
-      100% { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    label, input {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      background: #d9138a;
+      border: none;
+      padding: 12px 20px;
+      color: white;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #12a4d9;
+    }
+
+    .output {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      word-break: break-all;
+      cursor: pointer;
+      animation: bounceIn 0.5s ease-in-out;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 500px) {
+      .container { width: 90%; }
     }
   </style>
 </head>
 <body>
+
+  <h1>Password Generator</h1>
+
   <div class="container">
-    <h1>Password Generator</h1>
-    <div>
-      <label>Letters:</label>
-      <input type="number" id="letters" min="0" value="4">
+    <label for="name">Enter Name or Word:</label>
+    <input type="text" id="name" placeholder="e.g. Aravind123"/>
+
+    <label for="symbols">How many symbols?</label>
+    <input type="number" id="symbols" min="0" placeholder="e.g. 2"/>
+
+    <label for="numbers">How many numbers?</label>
+    <input type="number" id="numbers" min="0" placeholder="e.g. 4"/>
+
+    <button onclick="generatePassword()">Generate Password</button>
+
+    <div class="output" id="result" onclick="copyPassword()">
+      Click "Generate Password"
     </div>
-    <div>
-      <label>Symbols:</label>
-      <input type="number" id="symbols" min="0" value="2">
-    </div>
-    <div>
-      <label>Numbers:</label>
-      <input type="number" id="numbers" min="0" value="2">
-    </div>
-    <div>
-      <label>Words:</label>
-      <input type="number" id="words" min="0" value="2">
-    </div>
-    <button onclick="generatePassword()">Generate</button>
-    <div id="output"></div>
   </div>
 
   <script>
-    const symbolChars = "!@#$%^&*()_+=[]{}|;:,.<>?";
-    const numberChars = "0123456789";
-    const letterChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const wordList = ["magic", "cloud", "blue", "pink", "sun", "star", "dream", "code", "night", "bright", "soft", "peace", "shine"];
-
-    function getRandomChars(pool, count) {
-      let result = "";
-      for (let i = 0; i < count; i++) {
-        result += pool.charAt(Math.floor(Math.random() * pool.length));
-      }
-      return result;
-    }
-
-    function getRandomWords(count) {
-      let result = [];
-      for (let i = 0; i < count; i++) {
-        result.push(wordList[Math.floor(Math.random() * wordList.length)]);
-      }
-      return result.join("-");
-    }
-
-    function shuffleString(str) {
-      return str.split('').sort(() => 0.5 - Math.random()).join('');
-    }
-
     function generatePassword() {
-      const letterCount = parseInt(document.getElementById('letters').value) || 0;
-      const symbolCount = parseInt(document.getElementById('symbols').value) || 0;
-      const numberCount = parseInt(document.getElementById('numbers').value) || 0;
-      const wordCount = parseInt(document.getElementById('words').value) || 0;
+      const name = document.getElementById("name").value;
+      const symbolCount = parseInt(document.getElementById("symbols").value) || 0;
+      const numberCount = parseInt(document.getElementById("numbers").value) || 0;
 
-      let password = "";
-      password += getRandomChars(letterChars, letterCount);
-      password += getRandomChars(symbolChars, symbolCount);
-      password += getRandomChars(numberChars, numberCount);
-      password += getRandomWords(wordCount);
+      const symbols = "!@#$%^&*()_+{}[]~?";
+      const numbers = "0123456789";
 
-      // Shuffle characters (excluding the words if any)
-      const nonWordPart = password.replace(/-?[a-z]+-?/gi, "");
-      const wordPart = password.replace(/[^-a-z]/gi, "");
-      const finalPassword = shuffleString(nonWordPart) + (wordPart ? "-" + wordPart : "");
+      let randomSymbols = "";
+      let randomNumbers = "";
 
-      document.getElementById("output").innerText = finalPassword;
+      for (let i = 0; i < symbolCount; i++) {
+        randomSymbols += symbols.charAt(Math.floor(Math.random() * symbols.length));
+      }
+
+      for (let i = 0; i < numberCount; i++) {
+        randomNumbers += numbers.charAt(Math.floor(Math.random() * numbers.length));
+      }
+
+      let password = name + randomSymbols + randomNumbers;
+
+      // Shuffle password
+      password = password.split('').sort(() => Math.random() - 0.5).join('');
+
+      const result = document.getElementById("result");
+      result.textContent = password || "Please enter valid inputs!";
+      result.classList.add("output");
+    }
+
+    function copyPassword() {
+      const text = document.getElementById("result").textContent;
+      if (text && text !== "Click \"Generate Password\"") {
+        navigator.clipboard.writeText(text);
+        alert("Password copied to clipboard!");
+      }
     }
   </script>
+
 </body>
 </html>
